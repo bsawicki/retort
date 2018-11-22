@@ -1,10 +1,4 @@
-require "spec_helper"
-
-path = "./plugins/retort/plugin.rb"
-source = File.read(path)
-plugin = Plugin::Instance.new(Plugin::Metadata.parse(source), path)
-plugin.activate!
-plugin.initializers.first.call
+require 'rails_helper'
 
 describe ::Retort::RetortsController do
   routes { ::Retort::Engine.routes }

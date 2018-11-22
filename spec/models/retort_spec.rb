@@ -1,10 +1,4 @@
-require "spec_helper"
-
-path = "./plugins/retort/plugin.rb"
-source = File.read(path)
-plugin = Plugin::Instance.new(Plugin::Metadata.parse(source), path)
-plugin.activate!
-plugin.initializers.first.call
+require 'rails_helper'
 
 describe ::Retort::Retort do
   before do
@@ -95,6 +89,22 @@ describe ::Retort::Retort do
       retort.retort = ''
       expect { retort.save }.to change { PostDetail.count }.by(-1)
       expect(PostDetail.find_by(post: post, key: "retort_#{user.id}", value: :retort, extra: emoji)).not_to be_present
+    end
+
+    context "rate limiting" do
+      before do
+        RateLimiter.enable
+      end
+
+      after do
+        RateLimiter.disable
+      end
+
+      it "rate limits retorts" do
+        global_setting :retort_max_per_day, 1
+        retort.save
+        expect { another_post_retort.save }.to raise_error(RateLimiter::LimitExceeded)
+      end
     end
   end
 
