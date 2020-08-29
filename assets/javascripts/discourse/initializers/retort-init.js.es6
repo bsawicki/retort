@@ -104,7 +104,7 @@ function initializePlugin(api) {
         });
       }
       
-      this._super();
+      return this._super();
     },
 
     _emojisPerRow: {
