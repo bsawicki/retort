@@ -78,33 +78,33 @@ function initializePlugin(api) {
 
     @action
     onShow() {
-      if (this.limited) {
-        const emojis = retort_allowed_emojis.split('|')
-        const basis = (100 / this._emojisPerRow[emojis.length] || 5)
-
-        schedule('afterRender', this, () => {
-          $('.emoji-picker').html(`
-            <div class='limited-emoji-set'>
-              ${emojis.map(code => `<img
-                src="${emojiUrlFor(code)}"
-                width=20
-                height=20
-                title='${code}'
-                class='emoji' />`).join('')}
-            </div>
-          `)
-          $('.emoji-picker--retort').on('click', (e) => {
-            if ($(e.target).hasClass('emoji')) {
-              this.onEmojiSelection(e);
-            } else {
-              this.set('isActive', false);
-              this.onClose();
-            }
-          });
-        });
+      if (!this.limited) {
+        return this._super();
       }
-      
-      return this._super();
+
+      const emojis = retort_allowed_emojis.split('|')
+      const basis = (100 / this._emojisPerRow[emojis.length] || 5)
+
+      schedule('afterRender', this, () => {
+        $('.emoji-picker').html(`
+          <div class='limited-emoji-set'>
+            ${emojis.map(code => `<img
+              src="${emojiUrlFor(code)}"
+              width=20
+              height=20
+              title='${code}'
+              class='emoji' />`).join('')}
+          </div>
+        `)
+        $('.emoji-picker--retort').on('click', (e) => {
+          if ($(e.target).hasClass('emoji')) {
+            this.onEmojiSelection(e);
+          } else {
+            this.set('isActive', false);
+            this.onClose();
+          }
+        });
+      });
     },
 
     _emojisPerRow: {
